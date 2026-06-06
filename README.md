@@ -1,58 +1,98 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# E-Commerce Catalog & Admin Manager
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern, highly optimized Laravel application featuring a public storefront catalog and a secure admin panel for managing categories, subcategories, and products. The project enforces best practices in design (Tailwind CSS v4), input validation (Livewire Form Objects), security (Secure Headers Middleware), performance (N+1 query prevention), and Test-Driven Development (Pest PHP).
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Visual Previews
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Storefront
+![Storefront Preview](fi.png)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Admin Panel
+![Admin Panel Preview](ai.png)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Features
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Public Storefront**: A responsive product catalog displaying all active items with filtering by category and subcategory.
+- **Admin Dashboard**: A secure back-office CRUD management dashboard for Categories, Subcategories, and Products.
+- **Livewire Form Objects**: All form validations are completely decoupled from controllers/components and encapsulated inside Livewire Form Objects (`CategoryForm`, `SubcategoryForm`, and `ProductForm`).
+- **N+1 Query Prevention**: Eager-loads all model relationships on listing views and counts (e.g. eager-loading parent categories and product counters).
+- **Slug Generation**: Dynamic, unique, conflict-free slugs automatically generated and updated via a reusable `HasUniqueSlug` trait.
+- **Secure Headers Middleware**: Custom HTTP security headers (`X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection`, `Referrer-Policy`) applied automatically to all responses.
+- **Full Test Suite**: High test coverage using Pest PHP testing CRUD actions, authentication middleware, validation constraints, and file uploads.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## Technology Stack
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- **Framework**: Laravel 13 & PHP 8.5
+- **Frontend / Reactivity**: Livewire 4 & Alpine.js
+- **Styling**: Tailwind CSS v4 (Sleek UI with dark-mode sidebar layouts, glassmorphism, and smooth hover micro-animations)
+- **Database**: SQLite (using UUIDs for primary keys)
+- **Testing**: Pest PHP 4
+- **Formatter**: Laravel Pint
+
+---
+
+## Getting Started
+
+### 1. Installation
+
+Clone the repository, install Composer dependencies, and set up your environment:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Database Setup & Seeding
 
-## Contributing
+Run database migrations and seed the database with categories, subcategories, products, and a default admin user:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan migrate:fresh --seed
+```
 
-## Code of Conduct
+### 3. Default Admin Credentials
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+For easy access and testing, the login screen is pre-filled with the default credentials:
 
-## Security Vulnerabilities
+* **Email**: `admin@admin.com`
+* **Password**: `password`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 4. Running the Project
 
-## License
+Run the Vite development server to bundle assets:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+npm install
+npm run dev
+```
+
+The application is served by Laravel Herd (or your local PHP web server) at:
+* **Storefront**: `http://bpc-assesment.test`
+* **Admin Categories**: `http://bpc-assesment.test/admin/categories`
+
+---
+
+## Testing & Quality Assurance
+
+### Running Tests
+
+We use Pest PHP to verify backend controllers, middleware, and components. Run the test suite:
+
+```bash
+php artisan test --compact
+```
+
+### Code Formatting
+
+Check and enforce coding standards using Laravel Pint:
+
+```bash
+vendor/bin/pint --format agent
+```
