@@ -2,29 +2,33 @@
 
 use App\Livewire\Admin\CategoryManager;
 use App\Models\Category;
-use Livewire\Livewire;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
+use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
 it('renders the category manager page at the named route', function () {
-    $this->get(route('admin.categories'))
+    $user = User::factory()->create();
+    $this->actingAs($user)->get(route('admin.categories'))
         ->assertSuccessful()
         ->assertSeeLivewire(CategoryManager::class);
 });
 
 it('validates that category name is required and unique', function () {
-    Livewire::test(CategoryManager::class)
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)->test(CategoryManager::class)
         ->set('name', '')
         ->call('save')
         ->assertHasErrors(['name' => 'required']);
 
     $existingCategory = Category::factory()->create([
-        'name' => 'Electronics'
+        'name' => 'Electronics',
     ]);
 
-    Livewire::test(CategoryManager::class)
+    Livewire::actingAs($user)->test(CategoryManager::class)
         ->set('name', 'Electronics')
         ->call('save')
         ->assertHasErrors(['name' => 'unique']);
@@ -33,7 +37,9 @@ it('validates that category name is required and unique', function () {
 it('can create a category with a uuid and unique slug', function () {
     expect(Category::count())->toBe(0);
 
-    Livewire::test(CategoryManager::class)
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)->test(CategoryManager::class)
         ->set('name', 'Home & Kitchen')
         ->call('save')
         ->assertHasNoErrors()
@@ -49,10 +55,12 @@ it('can create a category with a uuid and unique slug', function () {
 
 it('can edit an existing category name and updates slug', function () {
     $category = Category::factory()->create([
-        'name' => 'Books'
+        'name' => 'Books',
     ]);
 
-    Livewire::test(CategoryManager::class)
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)->test(CategoryManager::class)
         ->call('edit', $category->id)
         ->assertSet('editingCategoryId', $category->id)
         ->assertSet('name', 'Books')
@@ -67,12 +75,14 @@ it('can edit an existing category name and updates slug', function () {
 
 it('can delete an existing category', function () {
     $category = Category::factory()->create([
-        'name' => 'Gardening'
+        'name' => 'Gardening',
     ]);
+
+    $user = User::factory()->create();
 
     expect(Category::count())->toBe(1);
 
-    Livewire::test(CategoryManager::class)
+    Livewire::actingAs($user)->test(CategoryManager::class)
         ->call('confirmDelete', $category->id)
         ->assertSet('deletingCategoryId', $category->id)
         ->call('delete')

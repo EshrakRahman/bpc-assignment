@@ -3,12 +3,13 @@
 namespace Database\Factories;
 
 use App\Models\Category;
+use App\Models\Subcategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Category>
+ * @extends Factory<Subcategory>
  */
-class CategoryFactory extends Factory
+class SubcategoryFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,6 +19,7 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
         return [
+            'category_id' => Category::factory(),
             'name' => fake()->unique()->word(),
         ];
     }
