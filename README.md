@@ -14,15 +14,56 @@ A modern, highly optimized Laravel application featuring a public storefront cat
 
 ---
 
-## Features
+## Code Structure & Architectural Approach
 
-- **Public Storefront**: A responsive product catalog displaying all active items with filtering by category and subcategory.
-- **Admin Dashboard**: A secure back-office CRUD management dashboard for Categories, Subcategories, and Products.
-- **Livewire Form Objects**: All form validations are completely decoupled from controllers/components and encapsulated inside Livewire Form Objects (`CategoryForm`, `SubcategoryForm`, and `ProductForm`).
-- **N+1 Query Prevention**: Eager-loads all model relationships on listing views and counts (e.g. eager-loading parent categories and product counters).
-- **Slug Generation**: Dynamic, unique, conflict-free slugs automatically generated and updated via a reusable `HasUniqueSlug` trait.
-- **Secure Headers Middleware**: Custom HTTP security headers (`X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection`, `Referrer-Policy`) applied automatically to all responses.
-- **Full Test Suite**: High test coverage using Pest PHP testing CRUD actions, authentication middleware, validation constraints, and file uploads.
+This project strictly follows Laravel and Livewire best practices, with a focus on modularity, readability, and performance. Below is an overview of the key directories, files, and architectural decisions.
+
+### Directory Structure
+
+```text
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── AuthController.php        # Handles Login, Register, and Logout routes
+│   │   │   └── HomeController.php        # Storefront home controller (optimized eager queries)
+│   │   └── Middleware/
+│   │       └── EnsureSecureHeaders.php   # Inject secure HTTP response headers
+│   ├── Livewire/
+│   │   ├── Admin/
+│   │   │   ├── CategoryManager.php       # Livewire Component for Category CRUD
+│   │   │   ├── ProductManager.php        # Livewire Component for Product CRUD & Image upload
+│   │   │   └── SubcategoryManager.php    # Livewire Component for Subcategory CRUD
+│   │   └── Forms/Admin/
+│   │       ├── CategoryForm.php          # Category Input Properties & Validation Rules
+│   │       ├── ProductForm.php           # Product Input Properties & Validation Rules
+│   │       └── SubcategoryForm.php       # Subcategory Input Properties & Validation Rules
+│   ├── Models/
+│   │   ├── Category.php                  # Category Eloquent Model (uses UUIDs)
+│   │   ├── Product.php                   # Product Eloquent Model (uses UUIDs)
+│   │   ├── Subcategory.php               # Subcategory Eloquent Model (uses UUIDs)
+│   │   └── User.php                      # User Authenticatable Model (uses PHPDoc Type-Hints)
+│   └── Traits/
+│       └── HasUniqueSlug.php             # Reusable trait for automatic conflict-free slugging
+├── routes/
+│   └── web.php                           # Route definitions (Guest vs Protected Admin groups)
+└── tests/
+    └── Feature/
+        ├── AuthTest.php                  # Pest tests for Login/Registration flow & protection
+        ├── CategoryTest.php              # Pest tests for Category CRUD & Form validation
+        ├── ProductTest.php               # Pest tests for Product CRUD, Validation & Image upload
+        └── SubcategoryTest.php           # Pest tests for Subcategory CRUD & Validation
+```
+
+### Architectural Decisions
+
+1. **Validation (Single Responsibility)**:
+   Instead of writing validation rules inside Livewire component classes or controllers, all inputs and validation constraints are encapsulated in **Livewire Form Objects** (`app/Livewire/Forms/Admin/`). This keeps the component classes clean and focused solely on processing actions (saving, editing, deleting).
+2. **N+1 Query Prevention**:
+   Database interactions are highly optimized. Listings and relation counts are retrieved using Laravel Eloquent's eager loading (`with()` and `withCount()`). This ensures that only a fixed number of queries are run, preventing performance degradation as the database grows.
+3. **Automated Slug Management**:
+   The `HasUniqueSlug` trait handles all slug logic automatically during Eloquent lifecycle hook events (`creating` and `updating`). If a name is modified, a unique, conflict-free slug is computed (excluding the model's own ID during updates).
+4. **Security Hardening**:
+   Administrative actions are shielded by standard Laravel authentication guards. To mitigate common injection and framing vulnerabilities, we use custom middleware (`EnsureSecureHeaders`) to inject key response security headers.
 
 ---
 
