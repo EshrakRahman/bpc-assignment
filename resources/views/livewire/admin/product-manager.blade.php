@@ -11,7 +11,7 @@
         <div class="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm h-fit space-y-6">
             <div>
                 <h2 class="text-base font-bold text-gray-900">
-                    {{ $editingProductId ? 'Edit Product' : 'Create New Product' }}
+                    {{ $form->editingProductId ? 'Edit Product' : 'Create New Product' }}
                 </h2>
                 <p class="text-xs text-gray-500 mt-0.5">Define product details.</p>
             </div>
@@ -19,78 +19,78 @@
             <form wire:submit.prevent="save" class="space-y-4">
                 <div>
                     <label for="categoryId" class="block text-xs font-semibold uppercase tracking-wider text-gray-500">Category</label>
-                    <select id="categoryId" wire:model.live="categoryId"
+                    <select id="categoryId" wire:model.live="form.categoryId"
                         class="mt-1.5 block w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all bg-white">
                         <option value="">Select a Category</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                         @endforeach
                     </select>
-                    @error('categoryId')
+                    @error('form.categoryId')
                         <p class="mt-1.5 text-xs text-red-600 font-medium">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div>
                     <label for="subcategoryId" class="block text-xs font-semibold uppercase tracking-wider text-gray-500">Subcategory</label>
-                    <select id="subcategoryId" wire:model="subcategoryId"
+                    <select id="subcategoryId" wire:model="form.subcategoryId"
                         class="mt-1.5 block w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all bg-white disabled:bg-gray-50 disabled:text-gray-400"
-                        {{ empty($categoryId) ? 'disabled' : '' }}>
+                        {{ empty($form->categoryId) ? 'disabled' : '' }}>
                         <option value="">Select a Subcategory</option>
                         @foreach($subcategories as $subcategory)
                             <option value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
                         @endforeach
                     </select>
-                    @error('subcategoryId')
+                    @error('form.subcategoryId')
                         <p class="mt-1.5 text-xs text-red-600 font-medium">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div>
                     <label for="name" class="block text-xs font-semibold uppercase tracking-wider text-gray-500">Product Name</label>
-                    <input type="text" id="name" wire:model="name"
+                    <input type="text" id="name" wire:model="form.name"
                         class="mt-1.5 block w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all placeholder-gray-400"
                         placeholder="e.g. Wireless Mouse">
-                    @error('name')
+                    @error('form.name')
                         <p class="mt-1.5 text-xs text-red-600 font-medium">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div>
                     <label for="description" class="block text-xs font-semibold uppercase tracking-wider text-gray-500">Description</label>
-                    <textarea id="description" wire:model="description" rows="3"
+                    <textarea id="description" wire:model="form.description" rows="3"
                         class="mt-1.5 block w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all placeholder-gray-400"
                         placeholder="Provide details about the product..."></textarea>
-                    @error('description')
+                    @error('form.description')
                         <p class="mt-1.5 text-xs text-red-600 font-medium">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div>
                     <label for="price" class="block text-xs font-semibold uppercase tracking-wider text-gray-500">Price ($)</label>
-                    <input type="number" id="price" wire:model="price" step="0.01" min="0"
+                    <input type="number" id="price" wire:model="form.price" step="0.01" min="0"
                         class="mt-1.5 block w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all placeholder-gray-400"
                         placeholder="e.g. 29.99">
-                    @error('price')
+                    @error('form.price')
                         <p class="mt-1.5 text-xs text-red-600 font-medium">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div>
                     <label for="image" class="block text-xs font-semibold uppercase tracking-wider text-gray-500">Product Image</label>
-                    <input type="file" id="image" wire:model="image"
+                    <input type="file" id="image" wire:model="form.image"
                         class="mt-1.5 block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 file:hover:bg-indigo-100 transition-colors">
                     
-                    <div wire:loading wire:target="image" class="mt-1 text-xs text-gray-500">Uploading preview...</div>
+                    <div wire:loading wire:target="form.image" class="mt-1 text-xs text-gray-500">Uploading preview...</div>
                     
-                    @error('image')
+                    @error('form.image')
                         <p class="mt-1.5 text-xs text-red-600 font-medium">{{ $message }}</p>
                     @enderror
 
-                    @if ($image)
+                    @if ($form->image)
                         <div class="mt-3">
                             <span class="block text-xs font-bold text-gray-400 uppercase mb-1.5">Preview:</span>
-                            <img src="{{ $image->temporaryUrl() }}" class="h-24 w-24 object-cover rounded-xl border border-gray-200 shadow-sm">
+                            <img src="{{ $form->image->temporaryUrl() }}" class="h-24 w-24 object-cover rounded-xl border border-gray-200 shadow-sm">
                         </div>
                     @endif
                 </div>
@@ -98,10 +98,10 @@
                 <div class="flex gap-2 pt-2">
                     <button type="submit"
                         class="inline-flex justify-center items-center rounded-lg border border-transparent bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all">
-                        {{ $editingProductId ? 'Update' : 'Save' }}
+                        {{ $form->editingProductId ? 'Update' : 'Save' }}
                     </button>
-                    @if($editingProductId)
-                        <button type="button" wire:click="$set('editingProductId', null); $set('name', ''); $set('categoryId', ''); $set('subcategoryId', ''); $set('description', ''); $set('price', ''); $set('image', null)"
+                    @if($form->editingProductId)
+                        <button type="button" wire:click="$set('form.editingProductId', null); $set('form.name', ''); $set('form.categoryId', ''); $set('form.subcategoryId', ''); $set('form.description', ''); $set('form.price', ''); $set('form.image', null)"
                             class="inline-flex justify-center items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all">
                             Cancel
                         </button>

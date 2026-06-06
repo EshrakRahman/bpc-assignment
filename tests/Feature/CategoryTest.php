@@ -20,18 +20,18 @@ it('validates that category name is required and unique', function () {
     $user = User::factory()->create();
 
     Livewire::actingAs($user)->test(CategoryManager::class)
-        ->set('name', '')
+        ->set('form.name', '')
         ->call('save')
-        ->assertHasErrors(['name' => 'required']);
+        ->assertHasErrors(['form.name' => 'required']);
 
     $existingCategory = Category::factory()->create([
         'name' => 'Electronics',
     ]);
 
     Livewire::actingAs($user)->test(CategoryManager::class)
-        ->set('name', 'Electronics')
+        ->set('form.name', 'Electronics')
         ->call('save')
-        ->assertHasErrors(['name' => 'unique']);
+        ->assertHasErrors(['form.name' => 'unique']);
 });
 
 it('can create a category with a uuid and unique slug', function () {
@@ -40,10 +40,10 @@ it('can create a category with a uuid and unique slug', function () {
     $user = User::factory()->create();
 
     Livewire::actingAs($user)->test(CategoryManager::class)
-        ->set('name', 'Home & Kitchen')
+        ->set('form.name', 'Home & Kitchen')
         ->call('save')
         ->assertHasNoErrors()
-        ->assertSet('name', ''); // Clears input after save
+        ->assertSet('form.name', ''); // Clears input after save
 
     expect(Category::count())->toBe(1);
 
@@ -62,9 +62,9 @@ it('can edit an existing category name and updates slug', function () {
 
     Livewire::actingAs($user)->test(CategoryManager::class)
         ->call('edit', $category->id)
-        ->assertSet('editingCategoryId', $category->id)
-        ->assertSet('name', 'Books')
-        ->set('name', 'Literature Books')
+        ->assertSet('form.editingCategoryId', $category->id)
+        ->assertSet('form.name', 'Books')
+        ->set('form.name', 'Literature Books')
         ->call('save')
         ->assertHasNoErrors();
 

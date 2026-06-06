@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Forms\Admin\SubcategoryForm;
 use App\Models\Category;
 use App\Models\Subcategory;
 use Illuminate\Contracts\View\View;
@@ -9,61 +10,36 @@ use Livewire\Component;
 
 class SubcategoryManager extends Component
 {
-    public string $name = '';
-
-    public string $categoryId = '';
-
-    public ?string $editingSubcategoryId = null;
+    public SubcategoryForm $form;
 
     public ?string $deletingSubcategoryId = null;
 
-    /**
-     * Get validation rules.
-     *
-     * @return array<string, array<int, string>>
-     */
-    protected function rules(): array
-    {
-        $uniqueRule = 'unique:subcategories,name';
-        if ($this->editingSubcategoryId) {
-            $uniqueRule .= ','.$this->editingSubcategoryId.',id';
-        }
-
-        return [
-            'categoryId' => ['required', 'exists:categories,id'],
-            'name' => ['required', $uniqueRule],
-        ];
-    }
-
     public function save(): void
     {
-        $this->validate();
+        $this->form->validate();
 
-        if ($this->editingSubcategoryId) {
-            $subcategory = Subcategory::findOrFail($this->editingSubcategoryId);
+        if ($this->form->editingSubcategoryId) {
+            $subcategory = Subcategory::findOrFail($this->form->editingSubcategoryId);
             $subcategory->update([
-                'category_id' => $this->categoryId,
-                'name' => $this->name,
+                'category_id' => $this->form->categoryId,
+                'name' => $this->form->name,
             ]);
-            $this->editingSubcategoryId = null;
             $this->dispatch('toast', message: 'Subcategory updated successfully!');
         } else {
             Subcategory::create([
-                'category_id' => $this->categoryId,
-                'name' => $this->name,
+                'category_id' => $this->form->categoryId,
+                'name' => $this->form->name,
             ]);
             $this->dispatch('toast', message: 'Subcategory created successfully!');
         }
 
-        $this->reset('name', 'categoryId', 'editingSubcategoryId');
+        $this->form->reset('name', 'categoryId', 'editingSubcategoryId');
     }
 
     public function edit(string $id): void
     {
         $subcategory = Subcategory::findOrFail($id);
-        $this->editingSubcategoryId = $subcategory->id;
-        $this->name = $subcategory->name;
-        $this->categoryId = $subcategory->category_id;
+        $this->form->setSubcategory($subcategory);
     }
 
     public function confirmDelete(string $id): void

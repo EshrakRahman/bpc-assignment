@@ -11,7 +11,7 @@
         <div class="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm h-fit space-y-6">
             <div>
                 <h2 class="text-base font-bold text-gray-900">
-                    {{ $editingCategoryId ? 'Edit Category' : 'Create New Category' }}
+                    {{ $form->editingCategoryId ? 'Edit Category' : 'Create New Category' }}
                 </h2>
                 <p class="text-xs text-gray-500 mt-0.5">Define category attributes.</p>
             </div>
@@ -19,10 +19,10 @@
             <form wire:submit.prevent="save" class="space-y-4">
                 <div>
                     <label for="name" class="block text-xs font-semibold uppercase tracking-wider text-gray-500">Category Name</label>
-                    <input type="text" id="name" wire:model="name"
+                    <input type="text" id="name" wire:model="form.name"
                         class="mt-1.5 block w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all placeholder-gray-400"
                         placeholder="e.g. Electronics">
-                    @error('name')
+                    @error('form.name')
                         <p class="mt-1.5 text-xs text-red-600 font-medium">{{ $message }}</p>
                     @enderror
                 </div>
@@ -30,10 +30,10 @@
                 <div class="flex gap-2 pt-2">
                     <button type="submit"
                         class="inline-flex justify-center items-center rounded-lg border border-transparent bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all">
-                        {{ $editingCategoryId ? 'Update' : 'Save' }}
+                        {{ $form->editingCategoryId ? 'Update' : 'Save' }}
                     </button>
-                    @if($editingCategoryId)
-                        <button type="button" wire:click="$set('editingCategoryId', null); $set('name', '')"
+                    @if($form->editingCategoryId)
+                        <button type="button" wire:click="$set('form.editingCategoryId', null); $set('form.name', '')"
                             class="inline-flex justify-center items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all">
                             Cancel
                         </button>

@@ -11,7 +11,7 @@
         <div class="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm h-fit space-y-6">
             <div>
                 <h2 class="text-base font-bold text-gray-900">
-                    {{ $editingSubcategoryId ? 'Edit Subcategory' : 'Create New Subcategory' }}
+                    {{ $form->editingSubcategoryId ? 'Edit Subcategory' : 'Create New Subcategory' }}
                 </h2>
                 <p class="text-xs text-gray-500 mt-0.5">Link subcategory to category.</p>
             </div>
@@ -19,24 +19,24 @@
             <form wire:submit.prevent="save" class="space-y-4">
                 <div>
                     <label for="categoryId" class="block text-xs font-semibold uppercase tracking-wider text-gray-500">Parent Category</label>
-                    <select id="categoryId" wire:model="categoryId"
+                    <select id="categoryId" wire:model="form.categoryId"
                         class="mt-1.5 block w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all bg-white">
                         <option value="">Select a Category</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                         @endforeach
                     </select>
-                    @error('categoryId')
+                    @error('form.categoryId')
                         <p class="mt-1.5 text-xs text-red-600 font-medium">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div>
                     <label for="name" class="block text-xs font-semibold uppercase tracking-wider text-gray-500">Subcategory Name</label>
-                    <input type="text" id="name" wire:model="name"
+                    <input type="text" id="name" wire:model="form.name"
                         class="mt-1.5 block w-full rounded-lg border border-gray-300 px-4 py-2.5 shadow-sm text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all placeholder-gray-400"
                         placeholder="e.g. Laptops">
-                    @error('name')
+                    @error('form.name')
                         <p class="mt-1.5 text-xs text-red-600 font-medium">{{ $message }}</p>
                     @enderror
                 </div>
@@ -44,10 +44,10 @@
                 <div class="flex gap-2 pt-2">
                     <button type="submit"
                         class="inline-flex justify-center items-center rounded-lg border border-transparent bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all">
-                        {{ $editingSubcategoryId ? 'Update' : 'Save' }}
+                        {{ $form->editingSubcategoryId ? 'Update' : 'Save' }}
                     </button>
-                    @if($editingSubcategoryId)
-                        <button type="button" wire:click="$set('editingSubcategoryId', null); $set('name', ''); $set('categoryId', '')"
+                    @if($form->editingSubcategoryId)
+                        <button type="button" wire:click="$set('form.editingSubcategoryId', null); $set('form.name', ''); $set('form.categoryId', '')"
                             class="inline-flex justify-center items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all">
                             Cancel
                         </button>

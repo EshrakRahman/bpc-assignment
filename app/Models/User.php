@@ -12,6 +12,11 @@ use Illuminate\Notifications\Notifiable;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
+/**
+ * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
+ * @method static \App\Models\User create(array $attributes = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|User query()
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */

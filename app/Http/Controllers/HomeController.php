@@ -22,7 +22,6 @@ class HomeController extends Controller
 
         $products = $productsQuery->paginate(12);
 
-        // Eager load subcategories and their products count to prevent N+1 queries in sidebar
         $categories = Category::with(['subcategories' => function ($query) {
             $query->withCount('products');
         }])->orderBy('name')->get();

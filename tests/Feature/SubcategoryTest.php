@@ -21,12 +21,12 @@ it('validates that subcategory name and category are required and unique', funct
     $user = User::factory()->create();
 
     Livewire::actingAs($user)->test(SubcategoryManager::class)
-        ->set('name', '')
-        ->set('categoryId', '')
+        ->set('form.name', '')
+        ->set('form.categoryId', '')
         ->call('save')
         ->assertHasErrors([
-            'name' => 'required',
-            'categoryId' => 'required',
+            'form.name' => 'required',
+            'form.categoryId' => 'required',
         ]);
 
     $category = Category::factory()->create();
@@ -36,10 +36,10 @@ it('validates that subcategory name and category are required and unique', funct
     ]);
 
     Livewire::actingAs($user)->test(SubcategoryManager::class)
-        ->set('name', 'Mobile Phones')
-        ->set('categoryId', $category->id)
+        ->set('form.name', 'Mobile Phones')
+        ->set('form.categoryId', $category->id)
         ->call('save')
-        ->assertHasErrors(['name' => 'unique']);
+        ->assertHasErrors(['form.name' => 'unique']);
 });
 
 it('can create a subcategory with a uuid and unique slug', function () {
@@ -49,12 +49,12 @@ it('can create a subcategory with a uuid and unique slug', function () {
     $user = User::factory()->create();
 
     Livewire::actingAs($user)->test(SubcategoryManager::class)
-        ->set('categoryId', $category->id)
-        ->set('name', 'Laptops & Computers')
+        ->set('form.categoryId', $category->id)
+        ->set('form.name', 'Laptops & Computers')
         ->call('save')
         ->assertHasNoErrors()
-        ->assertSet('name', '') // Clears input after save
-        ->assertSet('categoryId', '');
+        ->assertSet('form.name', '') // Clears input after save
+        ->assertSet('form.categoryId', '');
 
     expect(Subcategory::count())->toBe(1);
 
@@ -75,10 +75,10 @@ it('can edit an existing subcategory name and updates slug', function () {
 
     Livewire::actingAs($user)->test(SubcategoryManager::class)
         ->call('edit', $subcategory->id)
-        ->assertSet('editingSubcategoryId', $subcategory->id)
-        ->assertSet('name', 'Smartphones')
-        ->assertSet('categoryId', $category->id)
-        ->set('name', 'Apple iPhone')
+        ->assertSet('form.editingSubcategoryId', $subcategory->id)
+        ->assertSet('form.name', 'Smartphones')
+        ->assertSet('form.categoryId', $category->id)
+        ->set('form.name', 'Apple iPhone')
         ->call('save')
         ->assertHasNoErrors();
 

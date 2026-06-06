@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Forms\Admin\ProductForm;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Subcategory;
@@ -14,70 +15,36 @@ class ProductManager extends Component
 {
     use WithFileUploads;
 
-    public string $name = '';
-
-    public string $description = '';
-
-    public string $price = '';
-
-    public string $categoryId = '';
-
-    public string $subcategoryId = '';
-
-    /** @var mixed */
-    public $image;
-
-    public ?string $editingProductId = null;
+    public ProductForm $form;
 
     public ?string $deletingProductId = null;
 
-    /**
-     * Get validation rules.
-     *
-     * @return array<string, array<int, string>>
-     */
-    protected function rules(): array
-    {
-        $uniqueRule = 'unique:products,name';
-        if ($this->editingProductId) {
-            $uniqueRule .= ','.$this->editingProductId.',id';
-        }
-
-        return [
-            'categoryId' => ['required', 'exists:categories,id'],
-            'subcategoryId' => ['required', 'exists:subcategories,id'],
-            'name' => ['required', $uniqueRule],
-            'price' => ['required', 'numeric', 'min:0'],
-            'image' => ['nullable', 'image', 'max:2048'],
-        ];
-    }
-
     public function save(): void
     {
-        $this->validate();
+        $this->form->validate();
 
         // Custom validation: verify subcategory belongs to category
-        $subcategory = Subcategory::find($this->subcategoryId);
-        if ($subcategory && $subcategory->category_id !== $this->categoryId) {
-            $this->addError('subcategoryId', 'The selected subcategory does not belong to the selected category.');
+        $subcategory = Subcategory::find($this->form->subcategoryId);
+        if ($subcategory && $subcategory->category_id !== $this->form->categoryId) {
+            $this->addError('form.subcategoryId', 'The selected subcategory does not belong to the selected category.');
 
             return;
         }
 
         $imagePath = null;
-        if ($this->image) {
-            $imagePath = $this->image->store('products', 'public');
+        if ($this->form->image) {
+            $imagePath = $this->form->image->store('products', 'public');
         }
 
-        if ($this->editingProductId) {
-            $product = Product::findOrFail($this->editingProductId);
+        if ($this->form->editingProductId) {
+            $product = Product::findOrFail($this->form->editingProductId);
 
             $data = [
-                'category_id' => $this->categoryId,
-                'subcategory_id' => $this->subcategoryId,
-                'name' => $this->name,
-                'description' => $this->description,
-                'price' => $this->price,
+                'category_id' => $this->form->categoryId,
+                'subcategory_id' => $this->form->subcategoryId,
+                'name' => $this->form->name,
+                'description' => $this->form->description,
+                'price' => $this->form->price,
             ];
 
             if ($imagePath) {
@@ -89,32 +56,26 @@ class ProductManager extends Component
             }
 
             $product->update($data);
-            $this->editingProductId = null;
             $this->dispatch('toast', message: 'Product updated successfully!');
         } else {
             Product::create([
-                'category_id' => $this->categoryId,
-                'subcategory_id' => $this->subcategoryId,
-                'name' => $this->name,
-                'description' => $this->description,
-                'price' => $this->price,
+                'category_id' => $this->form->categoryId,
+                'subcategory_id' => $this->form->subcategoryId,
+                'name' => $this->form->name,
+                'description' => $this->form->description,
+                'price' => $this->form->price,
                 'image_path' => $imagePath,
             ]);
             $this->dispatch('toast', message: 'Product created successfully!');
         }
 
-        $this->reset('name', 'description', 'price', 'categoryId', 'subcategoryId', 'image', 'editingProductId');
+        $this->form->reset('name', 'description', 'price', 'categoryId', 'subcategoryId', 'image', 'editingProductId');
     }
 
     public function edit(string $id): void
     {
         $product = Product::findOrFail($id);
-        $this->editingProductId = $product->id;
-        $this->name = $product->name;
-        $this->description = $product->description ?? '';
-        $this->price = (string) $product->price;
-        $this->categoryId = $product->category_id;
-        $this->subcategoryId = $product->subcategory_id;
+        $this->form->setProduct($product);
     }
 
     public function confirmDelete(string $id): void
@@ -140,8 +101,8 @@ class ProductManager extends Component
     public function render(): View
     {
         // Get subcategories filtered by selected category
-        $filteredSubcategories = $this->categoryId
-            ? Subcategory::where('category_id', $this->categoryId)->orderBy('name')->get()
+        $filteredSubcategories = $this->form->categoryId
+            ? Subcategory::where('category_id', $this->form->categoryId)->orderBy('name')->get()
             : collect();
 
         return view('livewire.admin.product-manager', [

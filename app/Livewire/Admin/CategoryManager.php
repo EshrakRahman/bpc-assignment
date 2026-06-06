@@ -2,61 +2,41 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Forms\Admin\CategoryForm;
 use App\Models\Category;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class CategoryManager extends Component
 {
-    public string $name = '';
-
-    public ?string $editingCategoryId = null;
+    public CategoryForm $form;
 
     public ?string $deletingCategoryId = null;
 
-    /**
-     * Get validation rules.
-     *
-     * @return array<string, array<int, string>>
-     */
-    protected function rules(): array
-    {
-        $uniqueRule = 'unique:categories,name';
-        if ($this->editingCategoryId) {
-            $uniqueRule .= ','.$this->editingCategoryId.',id';
-        }
-
-        return [
-            'name' => ['required', $uniqueRule],
-        ];
-    }
-
     public function save(): void
     {
-        $this->validate();
+        $this->form->validate();
 
-        if ($this->editingCategoryId) {
-            $category = Category::findOrFail($this->editingCategoryId);
+        if ($this->form->editingCategoryId) {
+            $category = Category::findOrFail($this->form->editingCategoryId);
             $category->update([
-                'name' => $this->name,
+                'name' => $this->form->name,
             ]);
-            $this->editingCategoryId = null;
             $this->dispatch('toast', message: 'Category updated successfully!');
         } else {
             Category::create([
-                'name' => $this->name,
+                'name' => $this->form->name,
             ]);
             $this->dispatch('toast', message: 'Category created successfully!');
         }
 
-        $this->reset('name', 'editingCategoryId');
+        $this->form->reset('name', 'editingCategoryId');
     }
 
     public function edit(string $id): void
     {
         $category = Category::findOrFail($id);
-        $this->editingCategoryId = $category->id;
-        $this->name = $category->name;
+        $this->form->setCategory($category);
     }
 
     public function confirmDelete(string $id): void

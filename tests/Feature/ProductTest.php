@@ -23,16 +23,16 @@ it('validates that required fields are present', function () {
     $user = User::factory()->create();
 
     Livewire::actingAs($user)->test(ProductManager::class)
-        ->set('name', '')
-        ->set('categoryId', '')
-        ->set('subcategoryId', '')
-        ->set('price', '')
+        ->set('form.name', '')
+        ->set('form.categoryId', '')
+        ->set('form.subcategoryId', '')
+        ->set('form.price', '')
         ->call('save')
         ->assertHasErrors([
-            'name' => 'required',
-            'categoryId' => 'required',
-            'subcategoryId' => 'required',
-            'price' => 'required',
+            'form.name' => 'required',
+            'form.categoryId' => 'required',
+            'form.subcategoryId' => 'required',
+            'form.price' => 'required',
         ]);
 });
 
@@ -46,12 +46,12 @@ it('validates that subcategory belongs to selected category', function () {
 
     // Attempt to save product with Category A but Subcategory B
     Livewire::actingAs($user)->test(ProductManager::class)
-        ->set('name', 'Test Product')
-        ->set('categoryId', $categoryA->id)
-        ->set('subcategoryId', $subcategoryB->id)
-        ->set('price', 99.99)
+        ->set('form.name', 'Test Product')
+        ->set('form.categoryId', $categoryA->id)
+        ->set('form.subcategoryId', $subcategoryB->id)
+        ->set('form.price', 99.99)
         ->call('save')
-        ->assertHasErrors(['subcategoryId']);
+        ->assertHasErrors(['form.subcategoryId']);
 });
 
 it('can upload product image and create product with unique slug', function () {
@@ -64,20 +64,20 @@ it('can upload product image and create product with unique slug', function () {
     $user = User::factory()->create();
 
     Livewire::actingAs($user)->test(ProductManager::class)
-        ->set('categoryId', $category->id)
-        ->set('subcategoryId', $subcategory->id)
-        ->set('name', 'Mechanical Keyboard')
-        ->set('description', 'Cool mechanical keyboard')
-        ->set('price', 129.99)
-        ->set('image', $image)
+        ->set('form.categoryId', $category->id)
+        ->set('form.subcategoryId', $subcategory->id)
+        ->set('form.name', 'Mechanical Keyboard')
+        ->set('form.description', 'Cool mechanical keyboard')
+        ->set('form.price', 129.99)
+        ->set('form.image', $image)
         ->call('save')
         ->assertHasNoErrors()
-        ->assertSet('name', '') // Reset form
-        ->assertSet('categoryId', '')
-        ->assertSet('subcategoryId', '')
-        ->assertSet('description', '')
-        ->assertSet('price', '')
-        ->assertSet('image', null);
+        ->assertSet('form.name', '') // Reset form
+        ->assertSet('form.categoryId', '')
+        ->assertSet('form.subcategoryId', '')
+        ->assertSet('form.description', '')
+        ->assertSet('form.price', '')
+        ->assertSet('form.image', null);
 
     expect(Product::count())->toBe(1);
 
@@ -106,10 +106,10 @@ it('can edit product details', function () {
 
     Livewire::actingAs($user)->test(ProductManager::class)
         ->call('edit', $product->id)
-        ->assertSet('editingProductId', $product->id)
-        ->assertSet('name', 'Old Product Name')
-        ->set('name', 'New Product Name')
-        ->set('price', 15.50)
+        ->assertSet('form.editingProductId', $product->id)
+        ->assertSet('form.name', 'Old Product Name')
+        ->set('form.name', 'New Product Name')
+        ->set('form.price', 15.50)
         ->call('save')
         ->assertHasNoErrors();
 
